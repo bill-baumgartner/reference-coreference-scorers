@@ -73,6 +73,8 @@ my $HEAD_COLUMN     = 8;
 my $RESPONSE_COLUMN = -1;
 my $KEY_COLUMN      = -1;
 
+my $repeated_mentions = 0;
+
 # Score. Scores the results of a coreference resolution system
 # Input: Metric, keys file, response file, [name]
 #        Metric: the metric desired to evaluate:
@@ -94,7 +96,7 @@ my $KEY_COLUMN      = -1;
 # F1 = 2 * Recall * Precision / (Recall + Precision)
 sub Score {
   my ($metric, $kFile, $rFile, $name) = @_;
-	our $repeated_mentions = 0;
+   $repeated_mentions = 0;
 
   if (lc($metric) eq 'blanc') {
     return ScoreBLANC($kFile, $rFile, $name);
@@ -377,9 +379,9 @@ sub IdentifMentions {
           $id{"$mention->[0],$mention->[1]"},
           "\n";
         push(@remove, $i);
-				$main::repeated_mentions++;
+				$repeated_mentions++;
 
-				if ($main::repeated_mentions > 10)
+				if ($repeated_mentions > 10)
 				{
 						print STDERR "Found too many repeated mentions (> 10) in the response, so refusing to score. Please fix the output.\n";
 						exit 1;
