@@ -36,6 +36,9 @@ if (@ARGV < 3) {
   keys_file: file with expected coreference chains in SemEval format
   
   response_file: file with output of coreference system (SemEval format)
+
+  allow_partial: if 'true', partial mention matches are allowed; otherwise
+                   response mentions must match key mention spans exactly
   
   name: [optional] the name of the document to score. If name is not
      given, all the documents in the dataset will be scored. If given

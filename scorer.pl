@@ -17,7 +17,7 @@ use CorScorer;
 
 if (@ARGV < 3) {
   print q|
-use: scorer.pl <metric> <keys_file> <response_file> [name]
+use: scorer.pl <metric> <keys_file> <response_file> <allow_partial> [name]
 
   metric: the metric desired to score the results:
     muc: MUCScorer (Vilain et al, 1995)
@@ -30,6 +30,9 @@ use: scorer.pl <metric> <keys_file> <response_file> [name]
   keys_file: file with expected coreference chains in SemEval format
 
   response_file: file with output of coreference system (SemEval format)
+
+  allow_partial: if 'true', partial mention matches are allowed; otherwise
+                 response mentions must match key mention spans exactly
 
   name: [optional] the name of the document to score. If name is not
     given, all the documents in the dataset will be scored. If given

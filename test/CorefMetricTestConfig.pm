@@ -132,6 +132,16 @@ our @TestCases = (
                         #”ceafe" => [1, 1, 1],
                         "blanc" => [0.22727, 0.11905, 0.15625] }
 },
+{ id => "A12_partial",
+	key_file => "DataFiles/TC-A.key",
+	response_file => "DataFiles/TC-A-12.response",
+	allow_partial => "true",
+	expected_metrics => { "muc" => [0, 0, 0]}
+		#"bcub" => [(1+1/2+2/3)/6, 4/7, 2*(13/36)*(4/7)/((13/36)+(4/7))],
+		#”ceafm" => [1, 1, 1],
+		#”ceafe" => [1, 1, 1],
+		#"blanc" => [0.22727, 0.11905, 0.15625] }
+},
 { id => "A13", 
   key_file => "DataFiles/TC-A.key", 
   response_file => "DataFiles/TC-A-13.response",
@@ -140,6 +150,16 @@ our @TestCases = (
                         #”ceafm" => [1, 1, 1],
                         #”ceafe" => [1, 1, 1],
                         "blanc" => [0.125, 0.02381, 0.04] }
+},
+{ id => "A13_partial",
+	key_file => "DataFiles/TC-A.key",
+	response_file => "DataFiles/TC-A-13.response",
+	allow_partial => "true",
+	expected_metrics => { "muc" => [3/3, 3/6, 6/9] }
+		#"bcub" => [(1+1/2+2*2/3)/6, (1/7+1/7+2*2/7)/7, 2*(17/36)*(6/49)/((17/36)+(6/49))],
+		#”ceafm" => [1, 1, 1],
+		#”ceafe" => [1, 1, 1],
+		#"blanc" => [0.125, 0.02381, 0.04] }
 },
 { id => "B1", 
   key_file => "DataFiles/TC-B.key", 
@@ -356,8 +376,148 @@ our @TestCases = (
                           #"ceafm" => ,
                           #"ceafe" => ,
                           "blanc" => [0.13333, 0.18182, 0.15385] }
-}
-
+},
+{ id => "O1",
+	key_file => "DataFiles/TC-O.key",
+	response_file => "DataFiles/TC-O-1.response",
+	# key and response each contain one split-span mention (exact match expected)
+	expected_metrics => { "muc" => [1, 1, 1],
+		"bcub" => [6/6, 6/6, 1],
+		"ceafm" => [1, 1, 1],
+		"ceafe" => [1, 1, 1],
+		"blanc" => [1, 1, 1] }
+},
+{ id => "O2",
+	key_file => "DataFiles/TC-O.key",
+	response_file => "DataFiles/TC-O-2.response",
+	expected_metrics => { "muc" => [2/3, 2/3, 4/6]}
+#		"bcub" => [6/6, 6/6, 1],
+#		"ceafm" => [1, 1, 1],
+#		"ceafe" => [1, 1, 1],
+#		"blanc" => [1, 1, 1] }
+},
+{ id => "O2_partial",
+	key_file => "DataFiles/TC-O.key",
+	response_file => "DataFiles/TC-O-2.response",
+	allow_partial => "true",
+	expected_metrics => { "muc" => [1, 1, 1]}
+	#		"bcub" => [6/6, 6/6, 1],
+	#		"ceafm" => [1, 1, 1],
+	#		"ceafe" => [1, 1, 1],
+	#		"blanc" => [1, 1, 1] }
+},
+{ id => "O3",
+	key_file => "DataFiles/TC-O.key",
+	response_file => "DataFiles/TC-O-3.response",
+	expected_metrics => { "muc" => [2/3, 2/3, 4/6]}
+	#		"bcub" => [6/6, 6/6, 1],
+	#		"ceafm" => [1, 1, 1],
+	#		"ceafe" => [1, 1, 1],
+	#		"blanc" => [1, 1, 1] }
+},
+{ id => "O3_partial",
+	key_file => "DataFiles/TC-O.key",
+	response_file => "DataFiles/TC-O-3.response",
+	allow_partial => "true",
+	expected_metrics => { "muc" => [2/3, 2/3, 4/6]}
+	#		"bcub" => [6/6, 6/6, 1],
+	#		"ceafm" => [1, 1, 1],
+	#		"ceafe" => [1, 1, 1],
+	#		"blanc" => [1, 1, 1] }
+},
+{ id => "P1",
+	key_file => "DataFiles/TC-P.key",
+	response_file => "DataFiles/TC-P-1.response",
+	expected_metrics => { "muc" => [1, 1, 1],
+		"bcub" => [6/6, 6/6, 1],
+		"ceafm" => [1, 1, 1],
+		"ceafe" => [1, 1, 1],
+		"blanc" => [1, 1, 1] }
+},
+	{ id => "P2",
+		key_file => "DataFiles/TC-P.key",
+		response_file => "DataFiles/TC-P-2.response",
+		expected_metrics => { "muc" => [2/3, 2/3, 4/6]}
+#			"bcub" => [6/6, 6/6, 1],
+#			"ceafm" => [1, 1, 1],
+#			"ceafe" => [1, 1, 1],
+#			"blanc" => [1, 1, 1] }
+	},
+	{ id => "P2_partial",
+		key_file => "DataFiles/TC-P.key",
+		response_file => "DataFiles/TC-P-2.response",
+		allow_partial => "true",
+		expected_metrics => { "muc" => [2/3, 2/3, 4/6]}
+		#			"bcub" => [6/6, 6/6, 1],
+		#			"ceafm" => [1, 1, 1],
+		#			"ceafe" => [1, 1, 1],
+		#			"blanc" => [1, 1, 1] }
+	},
+	{ id => "P3",
+		key_file => "DataFiles/TC-P.key",
+		response_file => "DataFiles/TC-P-3.response",
+		expected_metrics => { "muc" => [1/3, 1/3, 2/6]}
+		#			"bcub" => [6/6, 6/6, 1],
+		#			"ceafm" => [1, 1, 1],
+		#			"ceafe" => [1, 1, 1],
+		#			"blanc" => [1, 1, 1] }
+	},
+	{ id => "P3_partial",
+		key_file => "DataFiles/TC-P.key",
+		response_file => "DataFiles/TC-P-3.response",
+		allow_partial => "true",
+		expected_metrics => { "muc" => [1, 1, 1]}
+		#			"bcub" => [6/6, 6/6, 1],
+		#			"ceafm" => [1, 1, 1],
+		#			"ceafe" => [1, 1, 1],
+		#			"blanc" => [1, 1, 1] }
+	},
+	{ id => "P4",
+		key_file => "DataFiles/TC-P.key",
+		response_file => "DataFiles/TC-P-4.response",
+		expected_metrics => { "muc" => [1, 1, 1],
+			"bcub" => [6/6, 6/6, 1],
+			"ceafm" => [1, 1, 1],
+			"ceafe" => [1, 1, 1],
+			"blanc" => [1, 1, 1] }
+	},
+	{ id => "P5",
+		key_file => "DataFiles/TC-P.key",
+		response_file => "DataFiles/TC-P-5.response",
+		expected_metrics => { "muc" => [1, 1, 1],
+			"bcub" => [6/6, 6/6, 1],
+			"ceafm" => [1, 1, 1],
+			"ceafe" => [1, 1, 1],
+			"blanc" => [1, 1, 1] }
+	},
+	{ id => "Q1",
+		key_file => "DataFiles/TC-Q.key",
+		response_file => "DataFiles/TC-Q-1.response",
+		expected_metrics => { "muc" => [1, 1, 1],
+			"bcub" => [6/6, 6/6, 1],
+			"ceafm" => [1, 1, 1],
+			"ceafe" => [1, 1, 1],
+			"blanc" => [1, 1, 1] }
+	},
+	{ id => "Q2",
+		key_file => "DataFiles/TC-Q.key",
+		response_file => "DataFiles/TC-Q-2.response",
+		expected_metrics => { "muc" => [1/2, 1/2, 2/4]}
+#			"bcub" => [6/6, 6/6, 1],
+#			"ceafm" => [1, 1, 1],
+#			"ceafe" => [1, 1, 1],
+#			"blanc" => [1, 1, 1] }
+	},
+	{ id => "Q2_partial",
+		key_file => "DataFiles/TC-Q.key",
+		response_file => "DataFiles/TC-Q-2.response",
+		allow_partial => "true",
+		expected_metrics => { "muc" => [1, 1, 1]}
+		#			"bcub" => [6/6, 6/6, 1],
+		#			"ceafm" => [1, 1, 1],
+		#			"ceafe" => [1, 1, 1],
+		#			"blanc" => [1, 1, 1] }
+	}
 );
 
 1;

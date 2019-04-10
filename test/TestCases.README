@@ -123,6 +123,11 @@ Expected: BCUB=0.4425 [recall=13/36, prec=4/7]
 Expected: MUC=0 [recall=0, prec=0]
 Expected: BLANC=0.16 [recall_c=0/4, prec_c=0/0, f_c=0, recall_n=5/11, prec_n=5/21]
 
+TC-A-12-partial - System mentions. Only singletons in the response. Allow partial mention match.
+Key/Ref: {a} {bc} {def}
+Rsp/Sys: {a} {x} {y} {c} {d} {e} {z}
+
+Expected: MUC=0 [recall=0, prec=0]
 
 TC-A-13 - System mentions. All mentions are coreferent in the response.
 Key/Ref: {a} {bc} {def}
@@ -131,6 +136,13 @@ Rsp/Sys: {axycdez}
 Expected: BCUB=0.19447 [recall=17/36, prec=6/49]
 Expected: MUC=2/9 [recall=1/3, prec=1/6]
 Expected: BLANC=0.04 [recall_c=1/4, prec_c=1/21, recall_n=0/11, prec_n=0/0, f_n=0]
+
+TC-A-13-partial - System mentions. All mentions are coreferent in the response. Allow partial mention match.
+Key/Ref: {a} {bc} {def}
+Rsp/Sys: {axycdez}
+
+Expected: MUC=8/13 [recall=4/6, prec=4/7]
+
 
 
 TC-B-1 -- spurious mention (x) and missing mention (a) in response; link (bc) is a key non-coref link and is an incorrect response coref link.
@@ -387,4 +399,46 @@ Key/Ref: {a} {b} {c} {d} {e} {f}
 Rsp/Sys: {ab} {cxy} {z}
 
 Expected: BLANC=0.15 [recall_n=2/15, prec_n=2/11]
+
+
+TC-O-1 - perfect: test use of discontinuous mentions
+Key/Ref: {a} {[bc]d} {efg}
+Rsp/Sys: {a} {[bc]d} {efg}
+Expected: MUC=1 [recall=3/3=1, prec=3/3=1]
+
+TC-O-2 - almost perfect: test use of discontinuous mentions, response missing 2nd half of discontinous mention
+Key/Ref: {a} {[bc]d} {efg}
+Rsp/Sys: {a} {[b]d} {efg}
+
+TC-O-2-partial - almost perfect: test use of discontinuous mentions, response missing 2nd half of discontinous mention. Allow partial mention match.
+Key/Ref: {a} {[bc]d} {efg}
+Rsp/Sys: {a} {[b]d} {efg}
+
+TC-O-3 - almost perfect: test use of discontinuous mentions, response missing 1st half (head) of discontinous mention
+Key/Ref: {a} {[bc]d} {efg}
+Rsp/Sys: {a} {[c]d} {efg}
+
+TC-O-3-partial - almost perfect: test use of discontinuous mentions, response missing 1st half (head) of discontinous mention. Allow partial mention match.
+Key/Ref: {a} {[bc]d} {efg}
+Rsp/Sys: {a} {[c]d} {efg}
+
+TC-P-1 - perfect: more test use of discontinuous mentions
+Key/Ref: {[ach] e-f [i-jl] [np-r]}
+Rsp/Sys: {[ach] e-f [i-jl] [np-r]}
+Expected: MUC=1 [recall=1, prec=1]
+
+TC-P-2 - almost perfect: more test use of discontinuous mentions; removed part of a middle mention
+Key/Ref: {[ach] e-f [i-jl] [np-r]}
+Rsp/Sys: {[ach] e-f [l] [np-r]}
+Expected: MUC=2/6 [recall=1/3, prec=1/3]
+
+TC-P-3 - require multiple partial matches
+TC-P-4 - test that arbitrary mention ids work properly. Perfect match.
+TC-P-5 - test that arbitrary mention ids work properly. Perfect match.
+
+TC-Q-1 - more complex discontinuous mentions. Perfect match.
+TC-Q-2 - more complex discontinuous mentions. Minor mention mismatch.
+TC-Q-2-partial - more complex discontinuous mentions. Allow partial mention matching.
+
+
 

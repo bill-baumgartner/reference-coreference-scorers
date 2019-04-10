@@ -23,11 +23,12 @@ foreach my $test_case (@CorefMetricTestConfig::TestCases) {
   print "\nTesting case ($id): keyFile=", $key_response_files[0], 
         " responseFile=", $key_response_files[1], "\n";
   my $expected_metrics = $test_case->{'expected_metrics'};
+  my $allow_partial = $test_case->{'allow_partial'};
   foreach my $metric_name (sort keys %$expected_metrics) {
     my $expected_values = $expected_metrics->{$metric_name};
     *::SAVED_STDOUT = *STDOUT;
     *STDOUT = *::SUPRRES_STDOUT;
-    my @actual_counts = &CorScorer::Score($metric_name, @key_response_files);
+    my @actual_counts = &CorScorer::Score($metric_name, @key_response_files, $allow_partial);
     # Compute R,P,and F1 from raw counts.
     my @actual_values = CorefMetricTest::ComputeScoreFromCounts(@actual_counts);
     *STDOUT = *::SAVED_STDOUT;
