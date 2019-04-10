@@ -27,7 +27,6 @@ package CorScorer;
 # Revised in March, 2019 by Bill Baumgartner (william.baumgartner <at> ucdenver.edu)
 # to implement partial mention matching and to handle discontinuous mentions.
 
-
 use strict;
 use Algorithm::Munkres;
 use Data::Dumper;
@@ -299,10 +298,11 @@ sub GetCoreference {
         }
         last;
       }
+
       #print "line: $l\n";
       my @columns = split(/\t/, $l);
-      my $cInfo = $columns[$column];
-      push(@head, $columns[$HEAD_COLUMN]);
+      my $cInfo   = $columns[$column];
+      push(@head,   $columns[$HEAD_COLUMN]);
       push(@sentId, $columns[0]);
       if ($cInfo ne '_') {
 
@@ -313,31 +313,33 @@ sub GetCoreference {
 
         # one-token mention(s)
         while ($cInfo =~ s/\((\d+)(\w*)\)//) {
-          my $ie = GetIndex(\%ind, $1);
-          my $chainId = $1;
+          my $ie              = GetIndex(\%ind, $1);
+          my $chainId         = $1;
           my $disconMentionId = $2;
           if (defined($disconMentionId) && $disconMentionId ne "") {
-            # then this is a one-token piece of a mention with a discontinuous span; so store it in the id2split_annots hash
+
+# then this is a one-token piece of a mention with a discontinuous span; so store it in the id2split_annots hash
             my $k = $chainId . ":" . $disconMentionId;
             if (exists $id2split_annots{$k}) {
-              # then this is not the first span for this discontinuous mention, so add this span to the span(s) already present in the hash
-              #              unshift(@{$id2split_annots{$k}}, [ $lnumber, $lnumber ]);
+
+# then this is not the first span for this discontinuous mention, so add this span to the span(s) already present in the hash
+#              unshift(@{$id2split_annots{$k}}, [ $lnumber, $lnumber ]);
               unshift(@{$id2split_annots{$k}}, $lnumber);
               unshift(@{$id2split_annots{$k}}, $lnumber);
               print "+add_to discontinuous mention: @{$id2split_annots{$k}}\n"
-                  if ($VERBOSE > 2);
+                if ($VERBOSE > 2);
             }
             else {
               # then this is the first span for this discontinous mention
-              $id2split_annots{$k} = [ $lnumber, $lnumber, $lnumber ];
+              $id2split_annots{$k} = [$lnumber, $lnumber, $lnumber];
               print "+init discontinuous_mention: @{$id2split_annots{$k}}\n"
-                  if ($VERBOSE > 2);
+                if ($VERBOSE > 2);
             }
           }
           else {
-            push(@{$entities[$ie]}, [ $lnumber, $lnumber, $lnumber ]);
+            push(@{$entities[$ie]}, [$lnumber, $lnumber, $lnumber]);
             print "+mention (entity $ie): ($lnumber,$lnumber)\n"
-                if ($VERBOSE > 2);
+              if ($VERBOSE > 2);
           }
         }
 
@@ -350,17 +352,17 @@ sub GetCoreference {
 
         # end of mention(s)
         while ($cInfo =~ s/(\d+)(\w*)\)//) {
-          my $numberie = $1;
+          my $numberie  = $1;
           my $mentionId = $2;
-          my $ie = GetIndex(\%ind, $numberie);
-          my $start = pop(@{$half[$ie]});
+          my $ie        = GetIndex(\%ind, $numberie);
+          my $start     = pop(@{$half[$ie]});
           if (defined($start)) {
-            my $inim = $sentId[$start];
-            my $endm = $sentId[$lnumber];
+            my $inim  = $sentId[$start];
+            my $endm  = $sentId[$lnumber];
             my $tHead = $start;
 
-            # the token whose head is outside the mention is the head of the mention
-            for (my $t = $start; $t <= $lnumber; $t++) {
+        # the token whose head is outside the mention is the head of the mention
+            for (my $t = $start ; $t <= $lnumber ; $t++) {
               if ($head[$t] < $inim || $head[$t] > $endm) {
                 $tHead = $t;
                 last;
@@ -373,21 +375,23 @@ sub GetCoreference {
                 unshift(@{$id2split_annots{$k}}, $start);
                 unshift(@{$id2split_annots{$k}}, $lnumber);
                 print "+add_to discontinuous mention: @{$id2split_annots{$k}}\n"
-                    if ($VERBOSE > 2);
+                  if ($VERBOSE > 2);
               }
               else {
-                $id2split_annots{$k} = [ $start, $lnumber, $tHead ];
+                $id2split_annots{$k} = [$start, $lnumber, $tHead];
                 print "+init discontinuous mention: @{$id2split_annots{$k}}\n"
-                    if ($VERBOSE > 2);
+                  if ($VERBOSE > 2);
               }
             }
             else {
-              push(@{$entities[$ie]}, [ $start, $lnumber, $tHead ]);
-              print "+mention (entity $ie): ($start,$lnumber, $tHead)\n" if ($VERBOSE > 2);
+              push(@{$entities[$ie]}, [$start, $lnumber, $tHead]);
+              print "+mention (entity $ie): ($start,$lnumber, $tHead)\n"
+                if ($VERBOSE > 2);
             }
           }
           else {
-            die "Detected the end of a mention [$numberie]($ie) without begin (?,$lnumber)";
+            die
+"Detected the end of a mention [$numberie]($ie) without begin (?,$lnumber)";
           }
         }
       }
@@ -397,11 +401,10 @@ sub GetCoreference {
     # now add any discontinuous mentions to @entities
     foreach my $key (keys %id2split_annots) {
       my ($chainId, $mentionId) = split(/:/, $key);
-      my $ie = GetIndex(\%ind, $chainId);
+      my $ie         = GetIndex(\%ind, $chainId);
       my $span_array = $id2split_annots{$key};
       push(@{$entities[$ie]}, \@$span_array);
     }
-
 
     if ($VERBOSE > 1) {
       print "========= CHAINS ==========\n";
@@ -410,10 +413,10 @@ sub GetCoreference {
         print "CHAIN [size: " . scalar(@$chain) . "]\n";
         foreach my $mention (@$chain) {
           print "-- chain member: ";
-          for (my $i = 0; $i < scalar(@$mention) - 1; $i += 2) {
+          for (my $i = 0 ; $i < scalar(@$mention) - 1 ; $i += 2) {
             print " ($mention->[$i],$mention->[$i+1])";
           }
-          print "\n"
+          print "\n";
         }
       }
       print "=============================\n";
@@ -450,9 +453,9 @@ sub GetFileNames {
 # which is the first span, so "13 13" in this case.
 sub HeadSpan {
   my ($mentionStr) = @_;
-  my @s  = split(',', $mentionStr);
-  my $slength = scalar(@s);
-  my @headSpan = (@s[$slength-2] , @s[$slength-1]);
+  my @s        = split(',', $mentionStr);
+  my $slength  = scalar(@s);
+  my @headSpan = (@s[$slength - 2], @s[$slength - 1]);
   return @headSpan;
 }
 
@@ -470,13 +473,14 @@ sub PartialMatch {
     return;
   }
   for my $keyMentionStr (keys %$notMatched) {
-    my @keyHead = HeadSpan($keyMentionStr);
+    my @keyHead      = HeadSpan($keyMentionStr);
     my $keyHeadBegin = int(@keyHead[0]);
-    my $keyHeadEnd = int(@keyHead[1]);
-    my @s = split(',', $mentionStr);
-    for (my $i = 0; $i < scalar(@s) - 1; $i += 2) {
+    my $keyHeadEnd   = int(@keyHead[1]);
+    my @s            = split(',', $mentionStr);
+    for (my $i = 0 ; $i < scalar(@s) - 1 ; $i += 2) {
       my $spanBegin = int(@s[$i]);
-      my $spanEnd = int(@s[$i + 1]);
+      my $spanEnd   = int(@s[$i + 1]);
+
       # if a span in the mention string matches or overlaps the key head span,
       # then we call this a partial match
       if ($spanBegin >= $keyHeadBegin && $spanEnd <= $keyHeadEnd) {
@@ -508,14 +512,17 @@ sub IdentifMentions {
   # for each mention found in keys an ID is generated
   foreach my $entity (@$keys) {
     foreach my $mention (@$entity) {
+
       # without this line the original @$keys is somehow updated and
       # the chain member spans are blank when viewed downstream
       my @m = @$mention;
+
       # mention str = all but the last element of @$mention as the final
       # element is the tHead of the mention which is never used in the code
-      my $mentionStr = join(',', splice(@m, 0, - 1));
+      my $mentionStr = join(',', splice(@m, 0, -1));
       if (defined($id{$mentionStr})) {
-        print "Repeated mention in the key: $mentionStr ", $id{$mentionStr}, $idCount, "\n";
+        print "Repeated mention in the key: $mentionStr ", $id{$mentionStr},
+          $idCount, "\n";
       }
       $id{$mentionStr} = $idCount;
       $idCount++;
@@ -536,17 +543,20 @@ sub IdentifMentions {
     my @remove;
 
     foreach my $mention (@$entity) {
+
       # without this line the original @$response is somehow updated and the
       # chain member spans are blank when viewed downstream
-      my @m = @$mention;
-      my $mentionStr = join(',', splice(@m, 0, - 1));
+      my @m          = @$mention;
+      my $mentionStr = join(',', splice(@m, 0, -1));
       if (defined($map{$mentionStr})) {
-        print "Repeated mention in the response: $mentionStr ", $map{$mentionStr}, $id{$mentionStr}, "\n";
+        print "Repeated mention in the response: $mentionStr ",
+          $map{$mentionStr}, $id{$mentionStr}, "\n";
         push(@remove, $i);
 
         $repeated_mentions++;
         if ($repeated_mentions > 10) {
-          print STDERR "Found too many repeated mentions (> 10) in the response, so refusing to score. Please fix the output.\n";
+          print STDERR
+"Found too many repeated mentions (> 10) in the response, so refusing to score. Please fix the output.\n";
           exit 1;
         }
       }
@@ -554,6 +564,7 @@ sub IdentifMentions {
         $assigned[$id{$mentionStr}] = 1;
         $map{$mentionStr} = $id{$mentionStr};
         $exact++;
+
         # remove this mentionStr from the %notMatched hash so we know
         # which key mentions were not matched exactly
         delete $notMatched{$mentionStr};
@@ -562,43 +573,44 @@ sub IdentifMentions {
     }
 
     # Remove repeated mentions in the response
-    foreach my $i (sort {$b <=> $a} (@remove)) {
+    foreach my $i (sort { $b <=> $a } (@remove)) {
       splice(@$entity, $i, 1);
     }
   }
 
+  # now, lets remove any empty elements in the response array after removing
+  # potential repeats
+  my @another_remove = ();
+  my $ii;
 
-	# now, lets remove any empty elements in the response array after removing
-	# potential repeats
-	my @another_remove = ();
-	my $ii;
-
-	foreach my $eentity (@$response) {
-      if (@$eentity == 0) {
-        push(@another_remove, $ii);
-      }
-      $ii++;
+  foreach my $eentity (@$response) {
+    if (@$eentity == 0) {
+      push(@another_remove, $ii);
     }
+    $ii++;
+  }
 
-	foreach my $iii (sort { $b <=> $a } (@another_remove)) {
-      splice(@$response, $iii, 1);
-	}
-
+  foreach my $iii (sort { $b <=> $a } (@another_remove)) {
+    splice(@$response, $iii, 1);
+  }
 
   # Partial identificaiton: Inside bounds and including the head
   my $part = 0;
   foreach my $entity (@$response) {
     foreach my $mention (@$entity) {
+
       # without this line the original @$response is somehow updated and the
       # chain member spans are blank when viewed downstream
-      my @m =  @$mention;
-      my $mentionStr = join(',', splice(@m, 0, - 1));
+      my @m          = @$mention;
+      my $mentionStr = join(',', splice(@m, 0, -1));
       if (!defined($map{$mentionStr}) && $mentionStr != '') {
-        # then this mention was not an exact match (computed above).
-        # so see if its head overlaps with the head of a key mention
-        # that is not yet accounted for, and count it as a partial match if it does.
+
+    # then this mention was not an exact match (computed above).
+    # so see if its head overlaps with the head of a key mention
+    # that is not yet accounted for, and count it as a partial match if it does.
         my $partialMatch = PartialMatch($mentionStr, \%notMatched, $allow_p);
         if (defined($partialMatch) && !$assigned[$id{$partialMatch}]) {
+
           # partialMatch is defined. It equals a mentionStr in the
           # key set, so use the already-defined ID
           $assigned[$id{$partialMatch}] = 1;
@@ -624,16 +636,17 @@ sub IdentifMentions {
   }
 
   if (defined($totals)) {
-    $totals->{recallDen} += scalar(keys(%id));
+    $totals->{recallDen}    += scalar(keys(%id));
     $totals->{precisionDen} += scalar(keys(%map));
     if ($allow_p) {
-      $totals->{recallNum} += ($part + $exact);
+      $totals->{recallNum}    += ($part + $exact);
       $totals->{precisionNum} += ($part + $exact);
     }
     else {
-      $totals->{recallNum} += $exact;
+      $totals->{recallNum}    += $exact;
       $totals->{precisionNum} += $exact;
     }
+
     # below keys are never used
     #    $totals->{precisionExact} += $exact;
     #    $totals->{precisionPart}  += $part;
@@ -644,18 +657,18 @@ sub IdentifMentions {
   my $e = 0;
   foreach my $entity (@$keys) {
     foreach my $mention (@$entity) {
-      my $mentionStr = join(',', splice(@$mention, 0, - 1));
+      my $mentionStr = join(',', splice(@$mention, 0, -1));
       push(@{$kChainsOrig[$e]}, $id{$mentionStr});
-      push(@{$kChains[$e]}, $id{$mentionStr});
+      push(@{$kChains[$e]},     $id{$mentionStr});
     }
     $e++;
   }
   $e = 0;
   foreach my $entity (@$response) {
     foreach my $mention (@$entity) {
-      my $mentionStr = join(',', splice(@$mention, 0, - 1));
+      my $mentionStr = join(',', splice(@$mention, 0, -1));
       push(@{$rChainsOrig[$e]}, $map{$mentionStr});
-      push(@{$rChains[$e]}, $map{$mentionStr});
+      push(@{$rChains[$e]},     $map{$mentionStr});
     }
     $e++;
   }
@@ -1021,9 +1034,9 @@ sub ShowRPF {
 
 # NEW
 sub ScoreBLANC {
-  my ($kFile, $rFile, $name, $allow_partial) = @_;
-  my ($acumNRa, $acumDRa, $acumNPa, $acumDPa) = (0, 0, 0, 0);
-  my ($acumNRr, $acumDRr, $acumNPr, $acumDPr) = (0, 0, 0, 0);
+  my ($kFile,   $rFile,   $name,    $allow_partial) = @_;
+  my ($acumNRa, $acumDRa, $acumNPa, $acumDPa)       = (0, 0, 0, 0);
+  my ($acumNRr, $acumDRr, $acumNPr, $acumDPr)       = (0, 0, 0, 0);
   my %idenTotals =
     (recallDen => 0, recallNum => 0, precisionDen => 0, precisionNum => 0);
 
