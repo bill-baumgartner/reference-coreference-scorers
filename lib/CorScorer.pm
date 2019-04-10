@@ -27,6 +27,7 @@ package CorScorer;
 # Revised in March, 2019 by Bill Baumgartner (william.baumgartner <at> ucdenver.edu)
 # to implement partial mention matching and to handle discontinuous mentions.
 
+
 use strict;
 use Algorithm::Munkres;
 use Data::Dumper;
@@ -35,7 +36,8 @@ use Data::Dumper;
 use Math::Combinatorics;
 use Cwd;
 
-our $VERSION = '8.02';
+our $VERSION = '9.0.0-alpha';
+
 print "version: " . $VERSION . " " . Cwd::realpath(__FILE__) . "\n";
 
 ##
@@ -177,7 +179,8 @@ sub Score {
     foreach my $iname (keys(%{$kIndexNames})) {
       my $keys =
         GetCoreference($kFile, $KEY_COLUMN, $iname, $kIndexNames->{$iname});
-      my $response = GetCoreference($rFile, $RESPONSE_COLUMN, $iname,
+      my $response =
+        GetCoreference($rFile, $RESPONSE_COLUMN, $iname,
         $rIndexNames->{$iname});
 
       print "$iname:\n" if ($VERBOSE);
@@ -543,7 +546,6 @@ sub IdentifMentions {
     my @remove;
 
     foreach my $mention (@$entity) {
-
       # without this line the original @$response is somehow updated and the
       # chain member spans are blank when viewed downstream
       my @m          = @$mention;
@@ -779,11 +781,17 @@ sub Eval {
   elsif ($scorer eq 'bcub') {
     ($nr, $dr, $np, $dp) = BCUBED($keyChainsOrig, $responseChainsOrig);
   }
+  elsif ($scorer eq 'ebcub') {
+    ($nr, $dr, $np, $dp) = EBCUBED($keyChainsOrig, $responseChainsOrig);
+  }
   elsif ($scorer eq 'ceafm') {
     ($nr, $dr, $np, $dp) = CEAF($keyChainsOrig, $responseChainsOrig, 1);
   }
   elsif ($scorer eq 'ceafe') {
     ($nr, $dr, $np, $dp) = CEAF($keyChainsOrig, $responseChainsOrig, 0);
+  }
+  elsif ($scorer eq 'lea') {
+    ($nr, $dr, $np, $dp) = LEA($keyChainsOrig, $responseChainsOrig);
   }
   else {
     die "Metric $scorer not implemented yet\n";
@@ -899,6 +907,80 @@ sub BCUBED {
   return ($acumR, $keymentions, $acumP, $resmentions);
 }
 
+sub LEA {
+  my ($keys, $responses) = @_;
+
+  # Computing recall
+  my ($acumR, $keysImportance) = LEASUB($keys, $responses);
+
+  # Computing precision
+  my ($acumP, $responsesImportance) = LEASUB($responses, $keys);
+
+  ShowRPF($acumR, $keysImportance, $acumP, $responsesImportance) if ($VERBOSE);
+  return ($acumR, $keysImportance, $acumP, $responsesImportance);
+
+}
+
+sub LEASUB {
+  my ($keys, $responses) = @_;
+
+  my $rIndex = Indexa($responses);
+
+  my $leaScore   = 0;
+  my $importance = 0;
+
+  foreach my $kEntity (@$keys) {
+    next if (!defined($kEntity));
+    my $entitySize     = scalar(@$kEntity);
+    my $resolvedLinks  = 0;
+    my @mappedEntities = ();
+
+    if ($entitySize == 1) {    #singletons
+      my $cMention = $kEntity->[0];
+      my $rEntity =
+        (defined($rIndex->{$cMention}))
+        ? $responses->[$rIndex->{$cMention}]
+        : [];
+      my $rEntitySize = scalar(@$rEntity);
+
+      if ($rEntitySize == 1)
+      { #the source singleton mention is also a singleton in the target entities
+        $resolvedLinks++;
+      }
+    }
+    else {
+      for (my $i = 0 ; $i < @$kEntity ; $i++) {
+        my $cMention = $kEntity->[$i];
+        for (my $j = $i + 1 ; $j < @$kEntity ; $j++) {
+          my $nMention = $kEntity->[$j];
+          if ( defined($rIndex->{$cMention})
+            && defined($rIndex->{$nMention})
+            && $rIndex->{$cMention} == $rIndex->{$nMention})
+          {
+            $resolvedLinks++;
+          }
+        }
+      }
+    }
+
+    my $entityLinks;
+    if ($entitySize == 1) {
+      $entityLinks = 1;
+    }
+    else {
+      $entityLinks = ($entitySize * ($entitySize - 1) / 2) if ($entitySize);
+    }
+
+    my $resolutionScore = 0;
+    $resolutionScore = $resolvedLinks / $entityLinks if ($entityLinks);
+    $leaScore   += ($resolutionScore * $entitySize);
+    $importance += $entitySize;
+  }
+
+  return ($leaScore, $importance);
+
+}
+
 # type = 0: Entity-based
 # type = 1: Mention-based
 sub CEAF {
@@ -984,6 +1066,9 @@ sub SIMEntityBased {
     }
   }
 
+  #  if ($intersection == 1){
+  #    $intersection = 0
+  #  }
   my $r = 0;
   my $d = scalar(@$a) + scalar(@$b);
   if ($d != 0) {
@@ -1062,7 +1147,8 @@ sub ScoreBLANC {
     foreach my $iname (keys(%{$kIndexNames})) {
       my $keys =
         GetCoreference($kFile, $KEY_COLUMN, $iname, $kIndexNames->{$iname});
-      my $response = GetCoreference($rFile, $RESPONSE_COLUMN, $iname,
+      my $response =
+        GetCoreference($rFile, $RESPONSE_COLUMN, $iname,
         $rIndexNames->{$iname});
 
       print "$name:\n" if ($VERBOSE);

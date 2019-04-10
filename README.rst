@@ -14,14 +14,25 @@ partial mention matching scheme.
 VERSION
 -------
 
-The current stable (official) version for scoring predicted mentions is **v8.02**
+The current stable (official) version for scoring predicted mentions
+is **v8.02**
+
+This is an alpha release version with the inclusion of `LEA scorer`_.
+
+.. _LEA scorer: LEA-README.rst
+
+We have bumped the version to **v9.0.0-alpha**. *However*, we are
+currently in the process of adding test cases to ensure correctness of
+the implementation. Therefore, **we do not as yet recommend using it for
+publishing definitive results.**
+
 
 CITATION
 --------
 
-We would appreciate if you cite the paper when you use this scorer as
-some of us are academics or wanting to be academics, and citations
-matter.
+We would appreciate if you cite the following papers when you use this
+scorer as some of us are academics or wanting to be academics, and
+citations matter.
 
   ::
 
@@ -35,6 +46,19 @@ matter.
      publisher = {Association for Computational Linguistics},
      pages     = {30--35},
      url       = {http://www.aclweb.org/anthology/P14-2006}
+     }
+
+
+   @InProceedings{moosavi-strube:2016:P16-1,
+     author    = {Moosavi, Nafise Sadat  and  Strube, Michael},
+     title     = {Which Coreference Evaluation Metric Do You Trust? A Proposal for a Link-based Entity Aware Metric},
+     booktitle = {Proceedings of the 54th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)},
+     month     = {August},
+     year      = {2016},
+     address   = {Berlin, Germany},
+     publisher = {Association for Computational Linguistics},
+     pages     = {632--642},
+     url       = {http://www.aclweb.org/anthology/P16-1060}
      }
 
 
@@ -53,6 +77,7 @@ USAGE
      ceafm: CEAF (Luo et al., 2005) using mention-based similarity
      ceafe: CEAF (Luo et al., 2005) using entity-based similarity
      blanc: BLANC (Luo et al., 2014) BLANC metric for gold and predicted mentions
+     lea: LEA (Moosavi and Strube, 2016) Link-based Entity Aware Metric
      all: uses all the metrics to score
 
      <key>: file with expected coreference chains in CoNLL-2011/2012 format
@@ -61,7 +86,7 @@ USAGE
 
      <allow_partial>: if 'true', partial mention matches are allowed; otherwise
                       response mentions must match key mention spans exactly
- 
+
      <document-id>: optional. The name of the document to score. If name is not
                     given, all the documents in the dataset will be scored. If given
                     name is "none" then all the documents are scored but only total
@@ -146,6 +171,7 @@ AUTHORS
 * Sameer Pradhan, http://cemantix.org, pradhan <at> cemantix.org
 * Sebastian Martschat, sebastian.martschat <at> h-its.org
 * Xiaoqiang Luo, xql <at> google.com
+* Nafise Mosavi, nafise.moosavi <at> h-its.org
 
 
 COPYRIGHT
@@ -155,3 +181,4 @@ COPYRIGHT
 
     2009-2011, Emili Sapena esapena <at> lsi.upc.edu
     2011-      Sameer Pradhan pradhan <at> cemantix.org
+
