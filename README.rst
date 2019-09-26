@@ -14,7 +14,10 @@ partial mention matching scheme.
 VERSION
 -------
 
-The current stable (official) version for scoring predicted mentions is **v8.02**
+The current stable (official) version for scoring predicted mentions is **v9.0**. 
+Note that this version is a fork of the original project as it handles 
+discontinuous mentions, i.e. mentions composed of non-contiguous tokens, 
+and has implemented an optional partial mention matching scheme.
 
 CITATION
 --------
